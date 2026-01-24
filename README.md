@@ -50,7 +50,7 @@ display:
 
       // you can also manually track the display update count
       // for example, force full update after 10 updates
-      if (update_count % 10 == 0) {
+      if (it.update_count % 10 == 0) {
         it.set_refresh_mode(0); // full update
       } else {
         it.set_refresh_mode(2); // fast update
