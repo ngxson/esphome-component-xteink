@@ -1,0 +1,15 @@
+esphome:
+  ## IMPORTANT: Xteink-X4 secific configurations ##
+  platformio_options:
+    board_upload.maximum_size: "16777216"
+    board_upload.offset_address: "0x10000"
+  ## END OF SPECIFIC CONFIG ##
+
+esp32:
+  variant: esp32c3
+  framework:
+    type: arduino
+  ## IMPORTANT: Xteink-X4 secific configurations ##
+  flash_size: 16MB
+  partitions: partitions.csv
+  ## END OF SPECIFIC CONFIG ##

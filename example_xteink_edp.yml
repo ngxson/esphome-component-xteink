@@ -1,0 +1,33 @@
+packages:
+  common: !include
+    file: package_xteink_x4.yml
+
+esphome:
+  name: example-xteink-edp
+
+logger:
+  level: DEBUG
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components:
+      - xteink_edp
+    refresh: always
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_20
+    size: 20
+
+display:
+  - platform: xteink_edp
+    rotation: 270 # By default, the screen is horizontal, need to rotate to use in vertical orientation
+    update_interval: 10s
+    lambda: |-
+      // Print hello world
+      it.print(10, 10, id(roboto_20), "Hello world!");
+
+      // Print uptime
+      it.printf(10, 40, id(roboto_20), "Uptime: %lu", millis());
