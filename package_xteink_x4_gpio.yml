@@ -1,0 +1,100 @@
+# Package for mapping Xteink X4 GPIO
+# This contains button mapping
+
+esphome:
+  includes:
+    - <esp32-hal-adc.h>
+    - <esp_adc_cal.h>
+
+sensor:
+  - platform: adc
+    pin: GPIO0
+    name: "Battery level"
+    id: xteink_battery_level
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 60s
+    # attenuation: 12dB
+    samples: 10
+    # raw: true
+    filters:
+      - lambda: |-
+          const double dividerMultiplier = 2.0f;
+          // readRawMillivolts
+          const int16_t adc_raw = x;
+          // millivoltsFromRawAdc
+          esp_adc_cal_characteristics_t adc_chars;
+          esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_12, ADC_WIDTH_BIT_12, 1100, &adc_chars);
+          const uint32_t mv = esp_adc_cal_raw_to_voltage(adc_raw, &adc_chars);
+          // readVolts
+          const double volts = static_cast<double>(mv) * dividerMultiplier / 1000.0;
+          // percentageFromMillivolts
+          double y = -144.9390 * volts * volts * volts +
+               1655.8629 * volts * volts -
+               6158.8520 * volts +
+               7501.3202;
+          // Clamp to [0,100] and round
+          y = max(y, 0.0);
+          y = min(y, 100.0);
+          y = round(y);
+          return y;
+
+  - platform: adc
+    pin: GPIO1
+    internal: true # do not expose to hassio
+    name: "Front buttons"
+    id: xteink_front_buttons
+    update_interval: 1ms
+    # attenuation: 11dB
+    # raw: true
+    on_raw_value:
+      then:
+        - lambda: |-
+            id(xteink_button_0).turn_off();
+            id(xteink_button_1).turn_off();
+            id(xteink_button_2).turn_off();
+            id(xteink_button_3).turn_off();
+            if (x > 3800) {
+              // no buttons pressed
+            } else if (x > 3100) {
+              id(xteink_button_0).turn_on();
+            } else if (x > 2090) {
+              id(xteink_button_1).turn_on();
+            } else if (x > 750) {
+              id(xteink_button_2).turn_on();
+            } else {
+              id(xteink_button_3).turn_on();
+            }
+
+  - platform: adc
+    pin: GPIO2
+    internal: true # do not expose to hassio
+    name: "Side buttons"
+    id: xteink_side_buttons
+    update_interval: 1ms
+    # attenuation: 11dB
+    # raw: true
+    on_raw_value:
+      then:
+        - lambda: |-
+            id(xteink_button_up).turn_off();
+            id(xteink_button_down).turn_off();
+            if (x > 3800) {
+              // no buttons pressed
+            } else if (x > 1120) {
+              id(xteink_button_up).turn_on();
+            } else {
+              id(xteink_button_down).turn_on();
+            }
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO3
+    internal: true # do not expose to hassio
+    name: "Power button"
+    id: xteink_power_button
+    on_state:
+      then:
+        - lambda: |-
+            if (x) id(xteink_button_power).turn_on();
+            else   id(xteink_button_power).turn_off();

@@ -1,0 +1,86 @@
+packages:
+  common: !include
+    file: package_xteink_x4.yml
+  gpio: !include
+    file: package_xteink_x4_gpio.yml
+
+esphome:
+  name: example-xteink-full
+
+logger:
+  level: DEBUG
+
+# IMPORTANT: ID of output components must be in-sync with package_xteink_x4_gpio.yml
+output:
+  # Front buttons
+  - platform: template
+    type: binary
+    id: xteink_button_0
+    write_action:
+      then: # TODO
+
+  - platform: template
+    type: binary
+    id: xteink_button_1
+    write_action:
+      then: # TODO
+  
+  - platform: template
+    type: binary
+    id: xteink_button_2
+    write_action:
+      then: # TODO
+
+  - platform: template
+    type: binary
+    id: xteink_button_3
+    write_action:
+      then: # TODO
+
+  # Side buttons
+  - platform: template
+    type: binary
+    id: xteink_button_up
+    write_action:
+      then: # TODO
+
+  - platform: template
+    type: binary
+    id: xteink_button_down
+    write_action:
+      then: # TODO
+
+  # Power button
+  - platform: template
+    type: binary
+    id: xteink_button_power
+    write_action:
+      then: # TODO
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components:
+      - xteink_edp
+    refresh: always
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_20
+    size: 20
+
+display:
+  - platform: xteink_edp
+    rotation: 270 # By default, the screen is horizontal, need to rotate to use in vertical orientation
+    update_interval: 10s
+    lambda: |-
+      // Print hello world
+      it.print(10, 10, id(roboto_20), "Hello world!");
+
+      // Print uptime
+      it.printf(10, 10+30*1, id(roboto_20), "Uptime: %lu", millis());
+
+      // Print battery level
+      int lvl = id(xteink_battery_level).state;
+      it.printf(10, 10+30*2, id(roboto_20), "Battery: %d%%", lvl);
