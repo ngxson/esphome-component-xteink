@@ -9,7 +9,7 @@ Supported components:
 
 ## Usage
 
-See [./example_xteink_full.yml](example_xteink_full.yml) for a complete example.
+See [example_xteink_full.yml](./example_xteink_full.yml) for a complete example.
 
 Requires `partitions.csv` and `package_xteink_x4.yml` from this repo:
 
