@@ -1,0 +1,64 @@
+packages:
+  common: !include
+    file: package_xteink_x4.yml
+
+esphome:
+  name: example-xteink-full
+
+logger:
+  level: DEBUG
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components:
+      - xteink_edp
+      - xteink_battery
+      - xteink_input
+    refresh: always
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_20
+    size: 20
+
+sensor:
+  - platform: xteink_battery
+    battery_level:
+      id: bat_lvl
+      name: "Battery level"
+
+binary_sensor:
+  - platform: xteink_input
+    button_1:
+      id: btn_1
+    button_2:
+      id: btn_2
+    button_3:
+      id: btn_3
+    button_4:
+      id: btn_4
+    button_up:
+      id: btn_up
+    button_down:
+      id: btn_down
+    button_pwr:
+      id: btn_pwr
+
+display:
+  - platform: xteink_edp
+    rotation: 270 # By default, the screen is horizontal, need to rotate to use in vertical orientation
+    update_interval: 10s
+    lambda: |-
+      // Print hello world
+      it.print(10, 10, id(roboto_20), "Hello world!");
+
+      // Print uptime
+      it.printf(10, 10+30*1, id(roboto_20), "Uptime: %lu", millis());
+
+      // Print battery level
+      int lvl = id(bat_lvl).state;
+      it.printf(10, 10+30*2, id(roboto_20), "Battery: %d%%", lvl);
+
+      it.set_refresh_mode(1); // half update
