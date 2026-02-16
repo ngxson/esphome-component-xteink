@@ -2,7 +2,10 @@
 
 ESPHome components for Xteink X4 e-reader (ESP32-C3).
 
-Currently, this repo only contains the display component. Button components will be added soon.
+Supported components:
+- E-ink display
+- Buttons
+- Battery level
 
 ## Usage
 
